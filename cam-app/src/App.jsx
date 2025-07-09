@@ -12,8 +12,8 @@ function App() {
   const [receivedSelfies, setReceivedSelfies] = useState([])
 
   useEffect(() => {
-    // Connect to server using Vercel domain
-    const newSocket = io('https://cam-app-jnom.vercel.app')
+    // Connect to server using Render backend
+    const newSocket = io('https://cam-app-backend.onrender.com')
     setSocket(newSocket)
 
     newSocket.on('connect', () => {
@@ -31,7 +31,7 @@ function App() {
       setReceivedSelfies(prev => [...prev, data])
     })
 
-    // Generate mobile URL using Vercel domain
+    // Generate mobile URL using Vercel domain (frontend) with Render backend
     const mobileUrl = 'https://cam-app-jnom.vercel.app/mobile'
     setMobileUrl(mobileUrl)
 

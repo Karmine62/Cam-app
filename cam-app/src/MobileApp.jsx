@@ -10,8 +10,8 @@ function MobileApp() {
   const webcamRef = useRef(null);
 
   useEffect(() => {
-    // Connect to server using Vercel domain (update this with your actual Vercel URL)
-    const newSocket = io('https://your-vercel-app.vercel.app');
+    // Connect to server using Render backend
+    const newSocket = io('https://cam-app-backend.onrender.com');
     setSocket(newSocket);
 
     // Generate unique device ID
