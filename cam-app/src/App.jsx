@@ -1,0 +1,225 @@
+import { useState, useEffect } from 'react'
+import Webcam from 'react-webcam'
+import QRCode from 'react-qr-code'
+import io from 'socket.io-client'
+import './App.css'
+
+function App() {
+  const [showCamera, setShowCamera] = useState(false)
+  const [socket, setSocket] = useState(null)
+  const [isConnected, setIsConnected] = useState(false)
+  const [mobileUrl, setMobileUrl] = useState('')
+  const [receivedSelfies, setReceivedSelfies] = useState([])
+
+  useEffect(() => {
+    // Connect to server
+    const newSocket = io('http://localhost:3001')
+    setSocket(newSocket)
+
+    newSocket.on('connect', () => {
+      console.log('Connected to server')
+      newSocket.emit('desktop-connect')
+    })
+
+    newSocket.on('desktop-confirmed', () => {
+      setIsConnected(true)
+      console.log('Desktop connection confirmed')
+    })
+
+    newSocket.on('new-selfie', (data) => {
+      console.log('New selfie received:', data)
+      setReceivedSelfies(prev => [...prev, data])
+    })
+
+    // Generate mobile URL using your local IP
+    const mobileUrl = 'http://192.168.0.13:3001/mobile'
+    setMobileUrl(mobileUrl)
+
+    return () => {
+      newSocket.close()
+    }
+  }, [])
+
+  const handleOpenCamera = () => {
+    setShowCamera(true)
+  }
+
+  const handleCapture = () => {
+    // Capture functionality can be implemented here later
+    console.log('Capture button clicked')
+  }
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      padding: '20px',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      <h1 style={{ marginBottom: '30px', color: '#333' }}>
+        📸 Webcam App
+      </h1>
+      
+      {!showCamera ? (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '30px'
+        }}>
+          <button
+            onClick={handleOpenCamera}
+            style={{
+              padding: '12px 24px',
+              fontSize: '16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+          >
+            📷 Open Camera
+          </button>
+
+          {/* QR Code Section */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '15px',
+            padding: '20px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '12px',
+            border: '2px solid #e9ecef'
+          }}>
+            <h3 style={{ margin: '0', color: '#495057' }}>
+              📱 Mobile Access
+            </h3>
+            <p style={{ 
+              margin: '0', 
+              fontSize: '14px', 
+              color: '#6c757d',
+              textAlign: 'center'
+            }}>
+              Scan QR code with your phone to access mobile camera
+            </p>
+            
+            {mobileUrl && (
+              <div style={{
+                padding: '15px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                <QRCode
+                  value={mobileUrl}
+                  size={200}
+                  level="M"
+                  style={{ maxWidth: '100%' }}
+                />
+              </div>
+            )}
+            
+            <div style={{
+              fontSize: '12px',
+              color: '#6c757d',
+              textAlign: 'center',
+              maxWidth: '200px'
+            }}>
+              <p style={{ margin: '5px 0' }}>
+                <strong>URL:</strong> {mobileUrl}
+              </p>
+              <p style={{ margin: '5px 0' }}>
+                <strong>Status:</strong> {isConnected ? '🟢 Connected' : '🟡 Connecting...'}
+              </p>
+            </div>
+          </div>
+
+          {/* Received Selfies Section */}
+          {receivedSelfies.length > 0 && (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '15px',
+              padding: '20px',
+              backgroundColor: '#e8f5e8',
+              borderRadius: '12px',
+              border: '2px solid #d4edda'
+            }}>
+              <h3 style={{ margin: '0', color: '#155724' }}>
+                📸 Received Selfies ({receivedSelfies.length})
+              </h3>
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px',
+                justifyContent: 'center',
+                maxWidth: '400px'
+              }}>
+                {receivedSelfies.map((selfie, index) => (
+                  <img
+                    key={index}
+                    src={selfie.image}
+                    alt={`Selfie ${index + 1}`}
+                    style={{
+                      width: '80px',
+                      height: '60px',
+                      objectFit: 'cover',
+                      borderRadius: '6px',
+                      border: '2px solid #d4edda'
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px'
+        }}>
+          <Webcam
+            audio={false}
+            width={640}
+            height={480}
+            style={{
+              border: '2px solid #ddd',
+              borderRadius: '8px',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }}
+          />
+          <button
+            onClick={handleCapture}
+            style={{
+              padding: '12px 24px',
+              fontSize: '16px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#1e7e34'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#28a745'}
+          >
+            📷 Capture
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default App
