@@ -12,8 +12,8 @@ function App() {
   const [receivedSelfies, setReceivedSelfies] = useState([])
 
   useEffect(() => {
-    // Connect to server
-    const newSocket = io('http://localhost:3001')
+    // Connect to server using Vercel domain
+    const newSocket = io('https://cam-app-jnom.vercel.app')
     setSocket(newSocket)
 
     newSocket.on('connect', () => {
@@ -31,8 +31,8 @@ function App() {
       setReceivedSelfies(prev => [...prev, data])
     })
 
-    // Generate mobile URL using your local IP
-    const mobileUrl = 'http://192.168.0.13:3001/mobile'
+    // Generate mobile URL using Vercel domain
+    const mobileUrl = 'https://cam-app-jnom.vercel.app/mobile'
     setMobileUrl(mobileUrl)
 
     return () => {
