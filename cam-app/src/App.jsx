@@ -189,16 +189,51 @@ function App() {
           alignItems: 'center',
           gap: '20px'
         }}>
-          <Webcam
-            audio={false}
-            width={640}
-            height={480}
-            style={{
-              border: '2px solid #ddd',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-            }}
-          />
+          <div style={{
+            position: 'relative',
+            display: 'inline-block'
+          }}>
+            <Webcam
+              audio={false}
+              width={640}
+              height={480}
+              style={{
+                border: '2px solid #ddd',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+              }}
+            />
+            {/* Face Alignment Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '200px',
+              height: '250px',
+              border: '3px dashed #00ff00',
+              borderRadius: '50%',
+              pointerEvents: 'none',
+              zIndex: 10,
+              boxShadow: '0 0 10px rgba(0, 255, 0, 0.3)'
+            }}></div>
+            {/* Alignment Instructions */}
+            <div style={{
+              position: 'absolute',
+              bottom: '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              fontSize: '14px',
+              pointerEvents: 'none',
+              zIndex: 10
+            }}>
+              👤 Align your face in the circle
+            </div>
+          </div>
           <button
             onClick={handleCapture}
             style={{

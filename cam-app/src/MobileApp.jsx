@@ -111,17 +111,52 @@ function MobileApp() {
           alignItems: 'center',
           gap: '20px'
         }}>
-          <Webcam
-            ref={webcamRef}
-            audio={false}
-            width={320}
-            height={240}
-            style={{
-              border: '3px solid #ddd',
-              borderRadius: '12px',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-            }}
-          />
+          <div style={{
+            position: 'relative',
+            display: 'inline-block'
+          }}>
+            <Webcam
+              ref={webcamRef}
+              audio={false}
+              width={320}
+              height={240}
+              style={{
+                border: '3px solid #ddd',
+                borderRadius: '12px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+              }}
+            />
+            {/* Face Alignment Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '120px',
+              height: '150px',
+              border: '3px dashed #00ff00',
+              borderRadius: '50%',
+              pointerEvents: 'none',
+              zIndex: 10,
+              boxShadow: '0 0 10px rgba(0, 255, 0, 0.3)'
+            }}></div>
+            {/* Alignment Instructions */}
+            <div style={{
+              position: 'absolute',
+              bottom: '8px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              padding: '6px 12px',
+              borderRadius: '15px',
+              fontSize: '12px',
+              pointerEvents: 'none',
+              zIndex: 10
+            }}>
+              👤 Align face here
+            </div>
+          </div>
           <button
             onClick={capturePhoto}
             style={{
