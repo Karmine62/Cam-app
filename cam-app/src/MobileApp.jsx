@@ -10,32 +10,24 @@ function MobileApp() {
   const webcamRef = useRef(null);
 
   useEffect(() => {
-    console.log('Mobile app initializing...');
     // Connect to server using Render backend
-    const newSocket = io('https://cam-app-backend.onrender.com', {
-      transports: ['websocket', 'polling']
-    });
+    const newSocket = io('https://cam-app-backend.onrender.com');
     setSocket(newSocket);
 
     // Generate unique device ID
     const deviceId = 'mobile-' + Math.random().toString(36).substr(2, 9);
 
     newSocket.on('connect', () => {
-      console.log('Mobile: Connected to server');
+      console.log('Connected to server');
       newSocket.emit('mobile-connect', deviceId);
-    });
-
-    newSocket.on('connect_error', (error) => {
-      console.error('Mobile: Connection error:', error);
     });
 
     newSocket.on('connection-confirmed', () => {
       setIsConnected(true);
-      console.log('Mobile: Connection confirmed');
+      console.log('Mobile connection confirmed');
     });
 
     return () => {
-      console.log('Mobile: Cleaning up socket');
       newSocket.close();
     };
   }, []);
@@ -66,18 +58,6 @@ function MobileApp() {
     setCapturedImage(null);
   };
 
-  const [connectionError, setConnectionError] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isConnected) {
-        setConnectionError(true);
-      }
-    }, 10000); // 10 second timeout
-
-    return () => clearTimeout(timeout);
-  }, [isConnected]);
-
   if (!isConnected) {
     return (
       <div style={{
@@ -89,39 +69,18 @@ function MobileApp() {
         fontFamily: 'Arial, sans-serif'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <h2>{connectionError ? 'Connection Failed' : 'Connecting to server...'}</h2>
-          {connectionError ? (
-            <div style={{ marginTop: '20px' }}>
-              <p style={{ color: '#dc3545', marginBottom: '15px' }}>
-                Unable to connect to server. Please check your internet connection and try again.
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                🔄 Retry
-              </button>
-            </div>
-          ) : (
-            <div style={{ marginTop: '20px' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '4px solid #f3f3f3',
-                borderTop: '4px solid #3498db',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto'
-              }}></div>
-            </div>
-          )}
+          <h2>Connecting to server...</h2>
+          <div style={{ marginTop: '20px' }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #3498db',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto'
+            }}></div>
+          </div>
         </div>
       </div>
     );

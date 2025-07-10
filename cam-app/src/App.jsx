@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Webcam from 'react-webcam'
 import QRCode from 'react-qr-code'
 import io from 'socket.io-client'
+import MobileApp from './MobileApp'
 import './App.css'
 
 function App() {
@@ -10,8 +11,18 @@ function App() {
   const [isConnected, setIsConnected] = useState(false)
   const [mobileUrl, setMobileUrl] = useState('')
   const [receivedSelfies, setReceivedSelfies] = useState([])
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    // Check if user is on mobile device
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+
     // Connect to server using Render backend
     const newSocket = io('https://cam-app-backend.onrender.com')
     setSocket(newSocket)
@@ -32,7 +43,7 @@ function App() {
     })
 
     // Generate mobile URL using Vercel domain (frontend) with Render backend
-    const mobileUrl = 'https://cam-app-jnom.vercel.app/mobile'
+    const mobileUrl = 'https://cam-app-jnom.vercel.app'
     setMobileUrl(mobileUrl)
 
     return () => {
@@ -47,6 +58,11 @@ function App() {
   const handleCapture = () => {
     // Capture functionality can be implemented here later
     console.log('Capture button clicked')
+  }
+
+  // If mobile device, show mobile interface
+  if (isMobile) {
+    return <MobileApp />;
   }
 
   return (
